@@ -1,6 +1,5 @@
 pragma solidity ^0.4.11;
 
-
 contract CloudDevContract {
 
     struct ProjectPassport {
@@ -114,7 +113,7 @@ contract CloudDevContract {
         for(uint i=0; i<project.usersKey.length-1; i++) {
 
             if(project.usersKey[i] == _address) 
-                return false;
+                return false; //тут true A.K.
         }
         return true;
     }
@@ -130,6 +129,38 @@ contract CloudDevContract {
                 );
     }
 
+    // Добоваление правок в проект
+    function SetEdits(string _edits) {
+        project.edits = _edits;
+    }
+    */
+
+    // Получение статуса проекта: собранная сумма, участники, стоимость проекта, правки
+    // Вопрос как венуть mapping? return Shareholder[] 
+
+
+
+    function GetProjectStatus() constant returns(uint[100] , string, string, string, uint, uint, uint) {
+
+        uint sum = 0; //Сколько собрали
+
+        for (uint i=0; i<project.usersKey.length-1; i++ ){
+            sum += project.usersKey[i].cash; 
+        }
+
+        return (
+                project.usersKeys,
+                project.summary,
+                project.description,
+                project.dueDate,
+                project.price,
+                project.votersNumberMaxm,
+                sum);
+            
+        }
+
+
+    /*
     // Добоваление правок в проект
     function SetEdits(string _edits) {
         project.edits = _edits;
