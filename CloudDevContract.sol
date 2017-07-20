@@ -1,5 +1,6 @@
 pragma solidity ^0.4.11;
 
+
 contract CloudDevContract {
 
     struct ProjectPassport {
@@ -17,6 +18,7 @@ contract CloudDevContract {
         mapping (address => Shareholder) users;  // акционеры проекта
     }
 
+ 
     struct Shareholder {
         uint cash;          // сумма внесенная акционером
         uint voicePower;    // сила голоса участника 
@@ -27,7 +29,7 @@ contract CloudDevContract {
 
     // Занесение паспорта проекта в БЧ
     // На этапе создания БЧ основатель согласился внести требуемую сумму
-    // test data string: 
+    // test data string: "sum", "descr", 100, "17.10.1994", "0xa28b9f0cf273e0aef6db14ce13c0979e03c0c20d", 40, 2
     function CloudDevContract(string _summary, string _description, uint _price, string _dueDate, address _address, uint _cash, uint _votersNumberMax) {
 
         project.summary = _summary;
@@ -97,13 +99,13 @@ contract CloudDevContract {
 
         if(CheckUserUnique(_address)) {
 
+            throw;
+        }
+        else {
+            
             project.users[_address].cash += _cash;
             project.users[_address].voicePower = _cash / 100; // формулу для голоса выберем позже
             SetStatus(_address);
-        }
-        else {
-
-            throw;
         }
     }
 
@@ -113,57 +115,70 @@ contract CloudDevContract {
         for(uint i=0; i<project.usersKey.length-1; i++) {
 
             if(project.usersKey[i] == _address) 
-                return false; //тут true A.K.
+                return false;
         }
         return true;
     }
 
+    function GetAllAddresses() returns (address[]) {
 
-    // Получение статуса проекта: собранная сумма, участники, стоимость проекта, правки
-    // Вопрос как венуть mapping? return Shareholder[] 
-    /*
-    function GetProjectStatus() returns() {
+        return project.usersKey;
+    }
+
+    function GetUser(address _address) returns (uint, uint, uint) {
 
         return (
-
-                );
+            project.users[_address].cash,
+            project.users[_address].voicePower,
+            project.users[_address].status
+        );
     }
 
-    // Добоваление правок в проект
-    function SetEdits(string _edits) {
-        project.edits = _edits;
-    }
-    */
 
     // Получение статуса проекта: собранная сумма, участники, стоимость проекта, правки
-    // Вопрос как венуть mapping? return Shareholder[] 
-
-
-
-    function GetProjectStatus() constant returns(uint[100] , string, string, string, uint, uint, uint) {
+    function GetProjectStatus() constant returns(address[] , string, string, string, uint, uint, uint) {
 
         uint sum = 0; //Сколько собрали
 
-        for (uint i=0; i<project.usersKey.length-1; i++ ){
-            sum += project.usersKey[i].cash; 
+        for (uint i=0; i<project.usersKey.length-1; i++ ) {
+            sum += project.users[project.usersKey[i]].cash; 
         }
-
-        return (
-                project.usersKeys,
+        return (project.usersKey,
                 project.summary,
                 project.description,
                 project.dueDate,
                 project.price,
-                project.votersNumberMaxm,
-                sum);
+                project.votersNumberMax,
+                sum
+                );
             
-        }
+}
 
 
-    /*
     // Добоваление правок в проект
     function SetEdits(string _edits) {
         project.edits = _edits;
+    }
+    
+/*
+    // Получение массива ключей
+    function GetUserKeys(uint _projectId) returns(uint[100]){
+        return(project.usersKey);
+    }
+
+    //Получение инфо юзера по адресу
+    function GetUserInfo(address _address) returns(uint, uint, uint){
+        
+        for(uint i=0; i<project.usersKey.length-1; i++) {
+        if(project.usersKey[i] == _address) 
+            return (
+                    project.users.cash,
+                    project.users.voicePower,
+                    project.users.status        
+            );
+        }
+        return false;
+        
     }
     */
 }
